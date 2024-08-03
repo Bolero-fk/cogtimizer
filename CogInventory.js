@@ -128,6 +128,7 @@ class CogInventory {
     this.flagPose = [];
     this.flaggyShopUpgrades = 0;
     this.availableSlotKeys = [];
+    this.unFixedKeys = [];
     this._score = null;
     // Saved for performance
     this._board = new FakeBoard(this);
@@ -150,6 +151,7 @@ class CogInventory {
   }
   
   load(save) {
+    this.unFixedKeys = [];
     this.availableSlotKeys = [];
     this._score = null;
     console.log("Loading");
@@ -291,6 +293,7 @@ class CogInventory {
       this.slots[slot.key] = slot;
       if (!slot.fixed) {
         this.availableSlotKeys.push(slot.key);
+        this.unFixedKeys.push(slot.key);
       }
     }
     this.cogs = {};
@@ -314,6 +317,7 @@ class CogInventory {
     res.flagPose = [...this.flagPose];
     res.flaggyShopUpgrades = this.flaggyShopUpgrades;
     res.availableSlotKeys = [...this.availableSlotKeys];
+    res.unFixedKeys = [...this.unFixedKeys]
     return res;
   }
   
@@ -334,7 +338,7 @@ class CogInventory {
     };
 
     // Bonus grid done, now we can sum everything up
-    for (let key of this.availableSlotKeys) {
+    for (let key of this.unFixedKeys) {
       const entry = this.get(key);
       result.buildRate += entry.buildRate || 0;
       result.expBonus += entry.expBonus || 0;
@@ -402,7 +406,7 @@ class CogInventory {
 
     const board = this.board;
     const bonusGrid = Array(INV_ROWS).fill(0).map(() => { return Array(INV_COLUMNS).fill(0).map(() => { return { ...initialEffects } }) });
-    for (let key of this.availableSlotKeys) {
+    for (let key of this.unFixedKeys) {
       const entry = this.get(key);
       if (!entry.boostRadius) continue;
       const boosted = [];
@@ -499,7 +503,7 @@ class CogInventory {
       return;
     }
 
-    this.availableSlotKeys = this.availableSlotKeys.filter(availableKey => availableKey !== key);
+    this.unFixedKeys = this.unFixedKeys.filter(unFixedKey => unFixedKey !== key);
     cog.fixed = true;
   }
 }
