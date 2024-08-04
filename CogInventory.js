@@ -276,7 +276,7 @@ class CogInventory {
         boostRadius: c.h,
         flagBoost: c.j,
         nothing: c.k,
-        fixed: c.h === "everything",
+        fixed: false,
         blocked: false
       });
     });
